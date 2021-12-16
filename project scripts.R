@@ -191,3 +191,62 @@ cleanbeaches %>%
 # to have a value in your environment using $ dollar sign
 
 meanbugs=mean(cleanbeaches$beachbugs,na.rm=TRUE)  #meanbugs=mean(datasourcse$column_to_be_computed)
+
+
+# Making data wide and long
+cleanbecahes_new <- cleanbeaches %>% 
+  separate(date,c("day","month","year"),remove=FALSE) %>% 
+  mutate(logbeachbugs=log(beachbugs)) %>% 
+  mutate(beachbugsdiff=beachbugs-log(beachbugs)) %>% 
+  mutate(buggier=beachbugs>mean(beachbugs,na.rm=TRUE)) %>% 
+  group_by(site) %>% 
+  mutate(buggier_site=beachbugs>mean(beachbugs,na.rm=TRUE))
+View(cleanbecahes_new)
+View(cleanbeaches)
+
+# making the data wide
+wide_cleanbeaches  <- cleanbeaches  %>% 
+ select(site,date,beachbugs) %>% 
+  separate(date,c("day","month","year"),remove=FALSE) %>% 
+  View()
+
+wide_cleanbeaches <- cleanbeaches  %>% 
+  select(site,date,beachbugs) %>% 
+  separate(date,c("day","month","year"),remove=FALSE) %>% 
+  View()
+View(wide_cleanbeaches)
+
+wide_cleanbeaches <- 
+  wide_cleanbeaches %>% 
+  select(site,year,beachbugs)
+View(wide_cleanbeaches)
+
+long_data <-wide_cleanbeaches %>% 
+  group_by(year,site) %>% 
+  summarise(meanbeachbugs=mean(beachbugs,na.rm=TRUE))
+
+long_data <- long_data %>% 
+  select(year,site,meanbeachbugs)
+view(long_data)
+install.packages("reshape2")
+library(reshape2)
+
+long_data %>% 
+  group_by(year) %>% 
+  melt(id.vars=c("year","site","meanbeachbugs")) %>%  View()
+
+View(long_data)
+
+  write.csv(long_data,"C:/Users/alokr/Desktop/technical/Projects/R Project/Portfolio Project/Scripts//Long_data.csv",row.names=FALSE)
+
+# Changing long data into wide format :
+  library(tidyverse)
+  library(here)
+  
+  wide_data <- long_data %>% 
+    pivot_wider(names_from = site,
+                values_from = meanbeachbugs)
+View(wide_data)    
+ # Saving wide data in csv
+write.csv(wide_data,"C:/Users/alokr/Desktop/technical/Projects/R Project/Portfolio Project/Scripts//Wide_data.csv",row.names=FALSE)
+
